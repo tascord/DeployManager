@@ -68,7 +68,7 @@ switch (command) {
 
         break;
 
-    case '--start':
+    case '--stop':
 
         try {
             stop();

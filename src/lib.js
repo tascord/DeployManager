@@ -31,31 +31,31 @@ class WebImplementation extends require('events').EventEmitter {
 
         super();
 
-        if(!lock.locked()) start();
+        if (!lock.locked()) start();
 
         this.name = name;
         this.protocol = protocol;
         this.url = url;
         this.path = path;
-        
-        if(!this.name) throw new Error('Invalid web application name');
-        if(this.protocol != 'HTTP' && this.protocol != 'HTTPS') throw new Error('Invalid protocol.');
-        if(this.url ? /^([a-z0-9].)+$/.test(this.url) : false) throw new Error('Invalid web URL');
-        if(!this.path) throw new Error('Invalid path');
-        if(services.has(name)) throw new Error('A service by that name is already registered');
+
+        if (!this.name) throw new Error('Invalid web application name');
+        if (this.protocol != 'HTTP' && this.protocol != 'HTTPS') throw new Error('Invalid protocol.');
+        // if(this.url ? /^([a-z0-9].)+$/.test(this.url) : false) throw new Error('Invalid web URL');
+        if (!this.path) throw new Error('Invalid path');
+        if (services.has(name)) throw new Error('A service by that name is already registered');
 
         services.set(name, {
             name: this.name,
             protocol: this.protocol,
-            url: this.url, 
+            url: this.url,
             path: this.path
         })
 
-        if(!this.path.startsWith('/')) this.path = '/' + this.path;
+        if (!this.path.startsWith('/')) this.path = '/' + this.path;
 
         port_scan.findAPortNotInUse(3000, 8000, '127.0.0.1', (error, port) => {
-            
-            if(error) throw new Error(`Error sweeping ports: ${error}`);
+
+            if (error) throw new Error(`Error sweeping ports: ${error}`);
             this.port = port;
 
             services.set(`${name}.port`, this.port);
@@ -69,17 +69,17 @@ class WebImplementation extends require('events').EventEmitter {
 
 
     modify_nginx_config = () => {
-        
-        let section = 
-        `# START ${this.name} #` + `\n\n` +
-        `server {` + `\n\n\t` +
-        `listen 80;` + `\n\t` +
-        `server_name www.${this.url} ${this.url};` + `\n\n\t` +
-        `location ${this.path} {` + `\n\t\t` +
-        `proxy_pass http://127.0.0.1:${this.port};` + `\n\t` +
-        `}` + `\n\n` +
-        `}` + `\n\n` + 
-        `# END ${this.name} #` + '\n';
+
+        let section =
+            `# START ${this.name} #` + `\n\n` +
+            `server {` + `\n\n\t` +
+            `listen 80;` + `\n\t` +
+            `server_name www.${this.url} ${this.url};` + `\n\n\t` +
+            `location ${this.path} {` + `\n\t\t` +
+            `proxy_pass http://127.0.0.1:${this.port};` + `\n\t` +
+            `}` + `\n\n` +
+            `}` + `\n\n` +
+            `# END ${this.name} #` + '\n';
 
 
         let old_config = readFileSync(paths.nginx).toString().split('\n');
@@ -87,11 +87,11 @@ class WebImplementation extends require('events').EventEmitter {
 
         let in_self = false;
 
-        for(let line of old_config) {
+        for (let line of old_config) {
 
-            if(line.indexOf(`# START ${this.name} #`) > -1) in_self = true;
-            else if(line.indexOf(`# END ${this.name} #`) > -1) in_self = false;
-            else if(!in_self) new_config.push(line);
+            if (line.indexOf(`# START ${this.name} #`) > -1) in_self = true;
+            else if (line.indexOf(`# END ${this.name} #`) > -1) in_self = false;
+            else if (!in_self) new_config.push(line);
 
         }
 
@@ -115,15 +115,15 @@ const lock = {
 
 const start = (force = false) => {
 
-    if(force && lock.locked()) lock.unlock();
-    if(lock.locked()) throw new Error('Service already running (Lock file present)');
-    
+    if (force && lock.locked()) lock.unlock();
+    if (lock.locked()) throw new Error('Service already running (Lock file present)');
+
     // Create lockfile
     lock.lock();
 
     // Clear all services
     services.all().forEach(e => services.delete(e.ID));
-    
+
     // Clear configs
     writeFileSync(paths.nginx, '');
 
@@ -134,7 +134,7 @@ const start = (force = false) => {
 
 const stop = () => {
 
-    if(!lock.locked()) throw new Error('Service not running (Lock file missing)');
+    if (!lock.locked()) throw new Error('Service not running (Lock file missing)');
 
     // Stop Nginx
     execSync('sudo systemctl stop nginx');
@@ -144,7 +144,7 @@ const stop = () => {
 
 }
 
-const get_services = () =>  services.all().map(r => services.get(r.ID));
+const get_services = () => services.all().map(r => services.get(r.ID));
 
 // ---
 
@@ -152,6 +152,6 @@ module.exports = {
     WebImplementation,
     paths,
     get_services,
-    start, 
+    start,
     stop
 }

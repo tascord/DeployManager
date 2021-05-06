@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { get_services, start } = require('./src/lib');
+const { get_services, start, stop } = require('./src/lib');
 const { cyanBright, bold, redBright } = require('chalk');
 
 let args = process.argv.slice(2);
@@ -43,7 +43,7 @@ const title = (text) => {
 
 const display_help = () => console.log(`\n${cyanBright.bold(title('DeployManager Help'))}\nUsage: depm [COMMAND] [ARGUMENTS]\nCactiveNetwork Node.JS deployment manager.\n\n${format_string_array(commands)}`);
 
-if(!command) return display_help();
+if (!command) return display_help();
 
 switch (command) {
 
@@ -64,6 +64,19 @@ switch (command) {
 
         catch (e) {
             console.log(`\n${redBright.bold(title('DeployManager'))}\nDeployManager failed to start: ${e}\nTry running with ${cyanBright('--force')} flag if you know what you're doing.`);
+        }
+
+        break;
+
+    case '--start':
+
+        try {
+            stop();
+            console.log(`\n${cyanBright.bold(title('DeployManager'))}\nDeployManager stopped.`);
+        }
+
+        catch (e) {
+            console.log(`\n${redBright.bold(title('DeployManager'))}\nDeployManager failed to stop: ${e}`);
         }
 
         break;

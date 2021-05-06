@@ -1,3 +1,5 @@
+#! /bin/node
+
 const { get_services, start } = require('./src/lib');
 const { cyanBright, bold, redBright } = require('chalk');
 
@@ -15,6 +17,18 @@ const commands = [
         '--help',
         '-h',
         'Displays DeployManager help'
+    ],
+
+    [
+        '--start',
+        '',
+        'Start DeployManager'
+    ],
+
+    [
+        '--stop',
+        '',
+        'Stop DeployManager'
     ]
 ]
 

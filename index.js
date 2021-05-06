@@ -1,4 +1,4 @@
-#! /bin/node
+#!/usr/bin/env node
 
 const { get_services, start } = require('./src/lib');
 const { cyanBright, bold, redBright } = require('chalk');

@@ -5,18 +5,15 @@
   "main": "index.js",
   "dependencies": {
     "chalk": "^4.1.1",
-    "portscan": "^0.1.0",
+    "portscanner": "^2.2.0",
     "quick.db": "github:lorencerri/quick.db"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tascord/DeployManager.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["deploy", "manager"],
+  "author": "tascord",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/tascord/DeployManager/issues"

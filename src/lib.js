@@ -13,7 +13,7 @@ const { join } = require('path');
 
 const paths = {
     nginx: '/etc/nginx/sites-available/deploy-manager.conf',
-    lock: join(__dirname, '../', 'files', 'dm.lck');
+    lock: join(__dirname, '../', 'files', 'dm.lck')
 }
 
 // ---

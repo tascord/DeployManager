@@ -1,4 +1,4 @@
-const { get_services } = require('./src/lib');
+const { get_services, start } = require('./src/lib');
 const { cyanBright, bold, redBright } = require('chalk');
 
 let args = process.argv.slice(2);
@@ -41,13 +41,26 @@ switch (command) {
 
         break;
 
+    case '--start':
+
+        try {
+            start(args[0] == '--force');
+            console.log(`\n${cyanBright.bold(title('DeployManager'))}\nDeployManager started.`);
+        }
+
+        catch (e) {
+            console.log(`\n${redBright.bold(title('DeployManager'))}\nDeployManager failed to start: ${e}\nTry running with ${cyanBright('--force')} flag if you know what you're doing.`);
+        }
+
+        break;
+
     case '--help':
     case '-h':
         display_help();
         break;
 
     default:
-        console.log('bruh');
+        console.log(`\n${redBright.bold(title('DeployManager'))}\nUnknown command '${command}'`);
         break;
 
 }

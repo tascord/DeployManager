@@ -11,9 +11,11 @@ const { execSync } = require('child_process');
 // ---
 
 const paths = {
-    nginx: './files/nginx.conf',
+    nginx: '/etc/nginx/sites-available/deploy-manager.conf',
     lock: './files/dm.lck'
 }
+
+if(!existsSync(paths.nginx)) writeFileSync(paths.nginx, '');
 
 // ---
 
@@ -30,7 +32,7 @@ class WebImplementation extends require('events').EventEmitter {
 
         super();
 
-        if(!lock.locked()) setup();
+        if(!lock.locked()) start();
 
         this.name = name;
         this.protocol = protocol;
@@ -112,7 +114,7 @@ const lock = {
     unlock: () => unlinkSync(paths.lock)
 }
 
-const setup = (force = false) => {
+const start = (force = false) => {
 
     if(force && lock.locked()) lock.unlock();
     if(lock.locked()) throw new Error('Service already running (Lock file present)');
@@ -126,15 +128,31 @@ const setup = (force = false) => {
     // Clear configs
     writeFileSync(paths.nginx, '');
 
+    // Start Nginx
+    execSync('sudo systemctl start nginx');
+
+}
+
+const stop = () => {
+
+    if(!lock.locked()) throw new Error('Service not running (Lock file missing)');
+
+    // Stop Nginx
+    execSync('sudo systemctl stop nginx');
+
+    // Unlock
+    lock.unlock();
+
 }
 
 const get_services = () =>  services.all().map(r => services.get(r.ID));
 
 // ---
 
-
 module.exports = {
     WebImplementation,
     paths,
     get_services,
+    start, 
+    stop
 }

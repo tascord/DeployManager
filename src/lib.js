@@ -15,8 +15,6 @@ const paths = {
     lock: './files/dm.lck'
 }
 
-if(!existsSync(paths.nginx)) writeFileSync(paths.nginx, '');
-
 // ---
 
 class WebImplementation extends require('events').EventEmitter {

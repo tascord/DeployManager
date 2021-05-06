@@ -98,7 +98,11 @@ class WebImplementation extends require('events').EventEmitter {
         new_config = new_config.concat(section.split('\n'));
         writeFileSync(paths.nginx, new_config.join('\n').replace(/(\n\n\n)/g, ''));
 
-        execSync('sudo systemctl restart nginx.service');
+        try {
+            execSync('sudo systemctl restart nginx');
+        } catch (e) {
+            throw new Error(`Unable to restart Nginx: ${e}`)
+        }
 
     }
 
@@ -128,19 +132,26 @@ const start = (force = false) => {
     writeFileSync(paths.nginx, '');
 
     // Start Nginx
-    execSync('sudo systemctl start nginx');
-
+    try {
+        execSync('sudo systemctl start nginx');
+    } catch (e) {
+        throw new Error(`Unable to start Nginx: ${e}`)
+    }
 }
 
 const stop = () => {
 
     if (!lock.locked()) throw new Error('Service not running (Lock file missing)');
-    
+
     // Clear all services
     services.all().forEach(e => services.delete(e.ID));
 
     // Stop Nginx
-    execSync('sudo systemctl stop nginx');
+    try {
+        execSync('sudo systemctl stop nginx');
+    } catch (e) {
+        throw new Error(`Unable to stop Nginx: ${e}`)
+    }
 
     // Unlock
     lock.unlock();

@@ -135,6 +135,9 @@ const start = (force = false) => {
 const stop = () => {
 
     if (!lock.locked()) throw new Error('Service not running (Lock file missing)');
+    
+    // Clear all services
+    services.all().forEach(e => services.delete(e.ID));
 
     // Stop Nginx
     execSync('sudo systemctl stop nginx');

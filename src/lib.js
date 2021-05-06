@@ -27,7 +27,7 @@ class WebImplementation extends require('events').EventEmitter {
      * @param {String} url Applications public URL
      * @param {String} path Application path
      */
-    constructor(name, protocol, url, path = '/') {
+    constructor(name, protocol, url, path = '/', force = false) {
 
         super();
 
@@ -42,7 +42,7 @@ class WebImplementation extends require('events').EventEmitter {
         if (this.protocol != 'HTTP' && this.protocol != 'HTTPS') throw new Error('Invalid protocol.');
         // if(this.url ? /^([a-z0-9].)+$/.test(this.url) : false) throw new Error('Invalid web URL');
         if (!this.path) throw new Error('Invalid path');
-        if (services.has(name)) throw new Error('A service by that name is already registered');
+        if (services.has(name) && !force) throw new Error('A service by that name is already registered');
 
         services.set(name, {
             name: this.name,

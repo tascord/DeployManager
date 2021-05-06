@@ -7,12 +7,13 @@ const settings = new raw.table('settings');
 const port_scan = require('portscanner');
 const { readFileSync, writeFileSync, existsSync, unlinkSync } = require('fs');
 const { execSync } = require('child_process');
+const { join } = require('path');
 
 // ---
 
 const paths = {
     nginx: '/etc/nginx/sites-available/deploy-manager.conf',
-    lock: './files/dm.lck'
+    lock: join(__dirname, '../', 'files', 'dm.lck');
 }
 
 // ---

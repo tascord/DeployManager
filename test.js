@@ -1,7 +1,9 @@
-const { WebImplementation } = require('./src/lib');
+const { WebImplementation, HTTPS } = require('./src/lib');
 
 const server = new WebImplementation(
   'Test Application', // Name
-  'HTTPS', // Protocol
+  'HTTP', // Protocol
   'tascord.ai', // External URL
+  '/',
+  true
 );

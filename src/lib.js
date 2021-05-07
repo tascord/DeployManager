@@ -62,7 +62,6 @@ class WebImplementation extends require('events').EventEmitter {
         this.name = name;
         this.protocol = protocol;
         this.url = url;
-        this.path = path;
 
         if (!this.name) throw new Error('Invalid web application name');
         if (this.protocol != 'HTTP' && !(this.protocol instanceof HTTPS)) throw new Error('Invalid protocol.');

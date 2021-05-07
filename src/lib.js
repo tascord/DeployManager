@@ -30,15 +30,17 @@ class HTTPS {
     /**
      * Set up a web applications HTTPS (SSL) data
      * @param {String} cert_location SSL fullchain.pem file 
-     * @param {String} key_location  SSL privkey.pem file
+     * @param {String} key_location SSL privkey.pem file
+     * @param {Boolean} force Skip SSL location checks (useful if no permission)
      */
-    constructor(cert_location, key_location) {
+    constructor(cert_location, key_location, force = false) {
 
         this.cert_location = cert_location;
         this.key_location = key_location;
 
-        if(!existsSync(cert_location)) throw new Error('SSL Certificate (fullchain) doesn\'t exist at provided location.');
-        if(!existsSync(key_location)) throw new Error('SSL Certificate (privkey) doesn\'t exist at provided location.');
+        if (force) return;
+        if (!existsSync(cert_location)) throw new Error('SSL Certificate (fullchain) doesn\'t exist at provided location.');
+        if (!existsSync(key_location)) throw new Error('SSL Certificate (privkey) doesn\'t exist at provided location.');
 
     }
 

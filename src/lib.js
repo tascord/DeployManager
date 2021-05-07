@@ -66,7 +66,6 @@ class WebImplementation extends require('events').EventEmitter {
         if (!this.name) throw new Error('Invalid web application name');
         if (this.protocol != 'HTTP' && !(this.protocol instanceof HTTPS)) throw new Error('Invalid protocol.');
         // if(this.url ? /^([a-z0-9].)+$/.test(this.url) : false) throw new Error('Invalid web URL');
-        if (!this.path) throw new Error('Invalid path');
         if (services.has(name) && !force) throw new Error('A service by that name is already registered');
 
         services.set(name, {

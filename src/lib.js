@@ -103,8 +103,6 @@ class WebImplementation extends require('events').EventEmitter {
         let old_config = readFileSync(paths.nginx).toString().split('\n');
         let new_config = [];
 
-        console.log(section);
-
         let in_self = false;
 
         for (let line of old_config) {

@@ -73,10 +73,7 @@ class WebImplementation extends require('events').EventEmitter {
             name: this.name,
             protocol: this.protocol,
             url: this.url,
-            path: this.path
         })
-
-        if (!this.path.startsWith('/')) this.path = '/' + this.path;
 
         port_scan.findAPortNotInUse(3000, 8000, '127.0.0.1', (error, port) => {
 

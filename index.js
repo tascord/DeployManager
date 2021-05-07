@@ -50,7 +50,7 @@ switch (command) {
     case '--list-services':
     case '-ls':
 
-        let services = [['Service Name', 'Protocol', 'External URL', 'Path', 'Port'], ...get_services().map(s => Object.entries(s).reduce((p, a) => p.concat(a[1].toString()), []))];
+        let services = [['Service Name', 'Protocol', 'External URL', 'Port'], ...get_services().map(s => Object.entries(s).reduce((p, a) => p.concat(a[1].toString()), []))];
         console.log(`\n${cyanBright.bold(title('Currently Active Services'))}\n${format_string_array(services)}`);
 
         break;

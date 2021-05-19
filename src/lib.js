@@ -61,16 +61,16 @@ class WebImplementation extends require('events').EventEmitter {
 
         if (!lock.locked()) start();
 
-        this.name = name;
+        this.name = name.toString();
         this.protocol = protocol;
         this.url = url;
 
         if (!this.name) throw new Error('Invalid web application name');
         if (this.protocol != 'HTTP' && !(this.protocol instanceof HTTPS)) throw new Error('Invalid protocol.');
         // if(this.url ? /^([a-z0-9].)+$/.test(this.url) : false) throw new Error('Invalid web URL');
-        if (services.has(name) && !force) throw new Error('A service by that name is already registered');
+        if (services.has(this.name) && !force) throw new Error('A service by that name is already registered');
 
-        services.set(name, {
+        services.set(this.name, {
             name: this.name,
             protocol: this.protocol,
             url: this.url,
@@ -86,22 +86,18 @@ class WebImplementation extends require('events').EventEmitter {
 
         port_scan.findAPortNotInUse(lower_bound, 8000, '127.0.0.1', (error, port) => {
 
-            console.log(`Looking for open port above ${lower_bound}.`)
-
-            console.log(`Looking for services running on ${port}.`);
-            console.log(get_services())
-
             if (error) throw new Error(`Error sweeping ports: ${error}`);
-            if (get_services().find(s => s.port === port)) {
-                console.log(`Service running at port ${port}, skipping.`)
+
+            let service_on_port = get_services().find(s => s.port === port);
+            if (service_on_port) {
+                console.log(`Deployed application '${service_on_port.name}' running on port ${port}. Skipping.`)
                 return this.find_unused_port(port + 1);
             }
             
             this.port = port;
-
             services.set(`${this.name}.port`, this.port);
 
-            this.modify_nginx_config();
+            if(!settings.get('testing')) this.modify_nginx_config();
             this.emit('ready');
 
         })
@@ -164,11 +160,11 @@ const start = (force = false) => {
     services.all().forEach(e => services.delete(e.ID));
 
     // Clear configs
-    writeFileSync(paths.nginx, '');
+    if(!settings.get('testing')) writeFileSync(paths.nginx, '');
 
     // Start Nginx
     try {
-        execSync('sudo systemctl start nginx');
+        if(!settings.get('testing')) execSync('sudo systemctl start nginx');
     } catch (e) {
         throw new Error(`Unable to start Nginx: ${e}`)
     }
@@ -183,7 +179,7 @@ const stop = () => {
 
     // Stop Nginx
     try {
-        execSync('sudo systemctl stop nginx');
+        if(!settings.get('testing')) execSync('sudo systemctl stop nginx');
     } catch (e) {
         throw new Error(`Unable to stop Nginx: ${e}`)
     }
@@ -195,6 +191,9 @@ const stop = () => {
 
 const get_services = () => services.all().map(r => services.get(r.ID));
 
+const get_setting = (key) => settings.get(key);
+const set_setting = (key, value) => settings.set(key, value);
+
 // ---
 
 module.exports = {
@@ -203,5 +202,7 @@ module.exports = {
     paths,
     get_services,
     start,
-    stop
+    stop,
+    get_setting,
+    set_setting
 }

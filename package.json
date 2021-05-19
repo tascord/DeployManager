@@ -12,7 +12,10 @@
     "type": "git",
     "url": "git+https://github.com/tascord/DeployManager.git"
   },
-  "keywords": ["deploy", "manager"],
+  "keywords": [
+    "deploy",
+    "manager"
+  ],
   "author": "tascord",
   "license": "ISC",
   "bugs": {

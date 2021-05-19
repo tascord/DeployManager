@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { get_services, start, stop } = require('./src/lib');
+const { get_services, start, stop, get_setting, set_setting } = require('./src/lib');
 const { cyanBright, bold, redBright } = require('chalk');
 
 let args = process.argv.slice(2);
@@ -29,6 +29,11 @@ const commands = [
         '--stop',
         '',
         'Stop DeployManager'
+    ],
+    [
+        '--testing',
+        '',
+        'Toggles testing mode'
     ]
 ]
 
@@ -47,10 +52,22 @@ if (!command) return display_help();
 
 switch (command) {
 
+    case '--debug':
+        console.log(get_services())
+    break;
+
+    case '--testing':
+        
+        let status = !Boolean(get_setting('testing'));
+        set_setting('testing', status);
+
+        console.log(`\n${cyanBright.bold(title('DeployManager'))}\nDeployManager testing ${status ? 'enabled' : 'disabled'}.`);
+        break;
+
     case '--list-services':
     case '-ls':
 
-        let services = [['Service Name', 'Protocol', 'External URL', 'Port'], ...get_services().map(s => Object.entries(s).reduce((p, a) => p.concat((a[1].cert_location ? 'HTTPS' : a[1]).toString()), []))];
+        let services = [['Service Name', 'Protocol', 'External URL', 'Port'], ...get_services().map(s => [s.name, s.protocol['cert_location'] ? 'HTTPS' : s.protocol, s.url, s.port.toString() || 'Discovering...'])];
         console.log(`\n${cyanBright.bold(title('Currently Active Services'))}\n${format_string_array(services)}`);
 
         break;

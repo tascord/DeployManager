@@ -90,6 +90,7 @@ class WebImplementation extends require('events').EventEmitter {
 
             if ((settings.get('blacklist') || []).indexOf(port.toString()) !== -1) {
                 console.log(`Port ${port} blacklisted. Skipping.`);
+                return this.find_unused_port(port + 1);
             }
 
             let service_on_port = get_services().find(s => s.port === port);

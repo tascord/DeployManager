@@ -89,7 +89,7 @@ class WebImplementation extends require('events').EventEmitter {
             console.log(`Looking for open port above ${lower_bound}.`)
 
             console.log(`Looking for services running on ${port}.`);
-            console.log(get_services().map(s => s.port), get_services().find(s => s.port === port))
+            console.log(get_services(), get_services().find(s => s.port === port))
 
             if (error) throw new Error(`Error sweeping ports: ${error}`);
             if (get_services().find(s => s.port === port)) {

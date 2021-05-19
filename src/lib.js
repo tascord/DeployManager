@@ -86,8 +86,13 @@ class WebImplementation extends require('events').EventEmitter {
 
         port_scan.findAPortNotInUse(lower_bound, 8000, '127.0.0.1', (error, port) => {
 
+            console.log(`Looking for open port above ${lower_bound}.`)
+
             if (error) throw new Error(`Error sweeping ports: ${error}`);
-            if (get_services().find(s => s.port === 3002)) return this.find_unused_port(lower_bound + 1);
+            if (get_services().find(s => s.port === 3002)) {
+                console.log(`Service running at port ${port}, skipping.`)
+                return this.find_unused_port(port + 1);
+            }
             
             this.port = port;
 

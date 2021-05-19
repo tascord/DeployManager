@@ -91,7 +91,7 @@ class WebImplementation extends require('events').EventEmitter {
             
             this.port = port;
 
-            services.set(`${name}.port`, this.port);
+            services.set(`${this.name}.port`, this.port);
 
             this.modify_nginx_config();
             this.emit('ready');

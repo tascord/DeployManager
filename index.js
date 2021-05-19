@@ -47,6 +47,10 @@ if (!command) return display_help();
 
 switch (command) {
 
+    case "test":
+        console.log(get_services())
+        break;
+
     case '--list-services':
     case '-ls':
 

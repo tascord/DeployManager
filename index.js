@@ -30,10 +30,23 @@ const commands = [
         '',
         'Stop DeployManager'
     ],
+
     [
         '--testing',
         '',
         'Toggles testing mode'
+    ],
+
+    [
+        '--blacklist',
+        '-bl',
+        'Blacklists a given port'
+    ],
+
+    [
+        '--unblacklist',
+        '-ubl',
+        'Removes a port from the blacklist'
     ]
 ]
 
@@ -49,15 +62,50 @@ const title = (text) => {
 const display_help = () => console.log(`\n${cyanBright.bold(title('DeployManager Help'))}\nUsage: depm [COMMAND] [ARGUMENTS]\nCactiveNetwork Node.JS deployment manager.\n\n${format_string_array(commands)}`);
 
 if (!command) return display_help();
+let blacklisted = get_setting('blacklist') || [];
 
 switch (command) {
 
     case '--debug':
         console.log(get_services())
-    break;
+        break;
+
+    case '--blacklist':
+    case '-bl':
+
+        if (!args[0]) console.log(`\n${redBright.bold(title('DeployManager'))}\nNo blacklist port provided.`);
+        else if (isNaN(args[0])) console.log(`\n${redBright.bold(title('DeployManager'))}\nNon numerical blacklist port provided.`);
+        else if (blacklisted.indexOf(args[0]) !== -1) console.log(`\n${redBright.bold(title('DeployManager'))}\nPort already blacklisted.`);
+        else {
+
+            blacklisted.push(args[0]);
+            set_setting('blacklist', blacklisted);
+
+            console.log(`\n${cyanBright.bold(title('DeployManager'))}\nPort added to blacklist.\nBlacklisted ports: ${redBright(blacklisted.toString())}`);
+
+        }
+
+        break;
+
+    case '--unblacklist':
+    case '-ubl':
+
+        if (!args[0]) console.log(`\n${redBright.bold(title('DeployManager'))}\nNo un-blacklist port provided.`);
+        else if (isNaN(args[0])) console.log(`\n${redBright.bold(title('DeployManager'))}\nNon numerical un-blacklist port provided.`);
+        else if (blacklisted.indexOf(args[0]) === -1) console.log(`\n${redBright.bold(title('DeployManager'))}\nPort not blacklisted.`);
+        else {
+
+            blacklisted = blacklisted.filter(p => p !== args[0]);
+            set_setting('blacklist', blacklisted);
+
+            console.log(`\n${cyanBright.bold(title('DeployManager'))}\nPort removed from blacklist.\nBlacklisted ports: ${redBright(blacklisted.toString())}`);
+
+        }
+
+        break;
 
     case '--testing':
-        
+
         let status = !Boolean(get_setting('testing'));
         set_setting('testing', status);
 

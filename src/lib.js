@@ -88,6 +88,10 @@ class WebImplementation extends require('events').EventEmitter {
 
             if (error) throw new Error(`Error sweeping ports: ${error}`);
 
+            if ((settings.get('blacklist') || []).indexOf(port.toString()) !== -1) {
+                console.log(`Port ${port} blacklisted. Skipping.`);
+            }
+
             let service_on_port = get_services().find(s => s.port === port);
             if (service_on_port) {
                 console.log(`Deployed application '${service_on_port.name}' running on port ${port}. Skipping.`)

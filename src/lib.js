@@ -1,4 +1,4 @@
-const raw = require('quick.db')(require('path').join(__dirname, 'data.sqlite'));
+const raw = require('quick.db')(require('path').join('__dirname', 'data.sqlite'));
 const services = new raw.table('services');
 const settings = new raw.table('settings');
 
@@ -76,9 +76,19 @@ class WebImplementation extends require('events').EventEmitter {
             url: this.url,
         })
 
-        port_scan.findAPortNotInUse(3000, 8000, '127.0.0.1', (error, port) => {
+        this.find_unused_port();
+
+    }
+
+    find_unused_port = (lower_bound = 3000) => {
+        
+        if(lower_bound === 8000) throw new Error('No open found. [3000-8000]');
+
+        port_scan.findAPortNotInUse(lower_bound, 8000, '127.0.0.1', (error, port) => {
 
             if (error) throw new Error(`Error sweeping ports: ${error}`);
+            if (get_services().find(s => s.port === 3002)) return this.find_unused_port(lower_bound + 1);
+            
             this.port = port;
 
             services.set(`${name}.port`, this.port);
@@ -89,7 +99,6 @@ class WebImplementation extends require('events').EventEmitter {
         })
 
     }
-
 
     modify_nginx_config = () => {
 

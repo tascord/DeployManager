@@ -47,10 +47,6 @@ if (!command) return display_help();
 
 switch (command) {
 
-    case "test":
-        console.log(get_services().find(s => s.port === 3002));
-        break;
-
     case '--list-services':
     case '-ls':
 

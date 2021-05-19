@@ -1,4 +1,4 @@
-const raw = require('quick.db')(require('path').join('__dirname', 'data.sqlite'));
+const raw = require('quick.db')(require('path').join(__dirname, 'data.sqlite'));
 const services = new raw.table('services');
 const settings = new raw.table('settings');
 

@@ -5,8 +5,8 @@ const settings = new raw.table('settings');
 // ---
 
 const port_scan = require('portscanner');
-const { readFileSync, writeFileSync, existsSync, unlinkSync } = require('fs');
-const { execSync } = require('child_process');
+const { readFileSync, writeFileSync, existsSync, unlinkSync, rm } = require('fs');
+const { execSync, exec, execFile, spawn } = require('child_process');
 const { join } = require('path');
 
 // ---
@@ -23,7 +23,7 @@ const defaults = {
     https: readFileSync(paths.default_https).toString()
 }
 
-// ---
+// --- 
 
 class HTTPS {
 
@@ -54,8 +54,9 @@ class WebImplementation extends require('events').EventEmitter {
      * @param {'HTTP'|HTTPS} protocol Public URL protocol
      * @param {String} url Applications public URL
      * @param {Boolean} force Whether or not to force application creation (if already registered)
+     * @param {String} update_path Path to update script, run at module install location
      */
-    constructor(name, protocol, url, force = false) {
+    constructor(name, protocol, url, force = false, update_path = null) {
 
         super();
 
@@ -64,6 +65,7 @@ class WebImplementation extends require('events').EventEmitter {
         this.name = name.toString();
         this.protocol = protocol;
         this.url = url;
+        this.update_path = update_path;
 
         if (!this.name) throw new Error('Invalid web application name');
         if (this.protocol != 'HTTP' && !(this.protocol instanceof HTTPS)) throw new Error('Invalid protocol.');
@@ -74,6 +76,7 @@ class WebImplementation extends require('events').EventEmitter {
             name: this.name,
             protocol: this.protocol,
             url: this.url,
+            update_path: this.update_path
         })
 
         this.find_unused_port();
@@ -173,6 +176,11 @@ const start = (force = false) => {
     } catch (e) {
         throw new Error(`Unable to start Nginx: ${e}`)
     }
+
+    // Run remote server
+    let server = spawn(join(__dirname, 'remote.js'));
+    settings.set('server_id', server.pid);
+
 }
 
 const stop = () => {
@@ -189,10 +197,24 @@ const stop = () => {
         throw new Error(`Unable to stop Nginx: ${e}`)
     }
 
+    // Stop remote server
+    if(settings.has('server_id')) {
+        try {
+            execSync('sudo kill ' + settings.get('server_id'));
+        }
+        catch {
+            console.log(`Unable to stop remote server [PID: ${settings.get('server_id')}]. If process exists, please kill it manually.`);
+        }
+        settings.delete('server_id');
+    }
+
     // Unlock
     lock.unlock();
 
 }
+
+
+// ---
 
 const get_services = () => services.all().map(r => services.get(r.ID));
 

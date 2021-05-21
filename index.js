@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const { get_services, start, stop, get_setting, set_setting } = require('./src/lib');
-const { cyanBright, bold, redBright } = require('chalk');
+const { cyanBright, redBright } = require('chalk');
 
 let args = process.argv.slice(2);
 let command = args.shift();
@@ -47,6 +47,12 @@ const commands = [
         '--unblacklist',
         '-ubl',
         'Removes a port from the blacklist'
+    ],
+
+    [
+        '--secret',
+        '',
+        'Sets or views the remote secret'
     ]
 ]
 
@@ -69,6 +75,19 @@ switch (command) {
     case '--debug':
         console.log(get_services())
         break;
+
+    case '--secret':
+
+        let secret = get_setting('secret') || Math.random().toString().replace('.', '');
+        if(args[0]) {
+            secret = args.join();
+            console.log(`\n${cyanBright.bold(title('DeployManager'))}\nSecret updated.`);
+        }
+
+        else console.log(`\n${cyanBright.bold(title('DeployManager'))}\nStored secret: ${cyanBright(secret)}.`);
+        set_setting('secret', secret);
+
+    break;
 
     case '--blacklist':
     case '-bl':
@@ -130,6 +149,8 @@ switch (command) {
         catch (e) {
             console.log(`\n${redBright.bold(title('DeployManager'))}\nDeployManager failed to start: ${e}\nTry running with ${cyanBright('--force')} flag if you know what you're doing.`);
         }
+
+        process.exit(0);
 
         break;
 

@@ -3,6 +3,7 @@
 const { execFileSync } = require('child_process');
 const { existsSync } = require('fs');
 const http = require('http');
+const { join } = require('path');
 const { WebImplementation, get_setting, get_services } = require('./lib');
 
 const server = http.createServer((req, res) => {
@@ -24,7 +25,7 @@ const server = http.createServer((req, res) => {
             if (!project) res.statusCode = 400;
             else {
                 res.statusCode = 204;
-                if(project.update_path && existsSync(project.update_path)) execFileSync(project.update_path);
+                if(project.update_path && existsSync(project.update_path)) execFileSync(project.update_path, join(project.update_path, '../'));
             }
         }
 
